@@ -7,6 +7,6 @@ authors:
   affiliation: "Damghan University"
   orcid: "0009-0001-8662-9218"
 date-released: 2026-11-13
-version: v1.1.1
+version: v1.1.2
 license: MIT
 url: "https://github.com/Reza-S80/MFO-BOA-PDE-Solver"
