@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.2 (2026-11-13)
+- Strengthened CITATION.cff (author ORCID + repository URL); added a "How to cite" section, an RMSE figure (docs/rmse-burgers.png), and a CHANGELOG link to the README. No code change from v1.1.1.
+
 ## v1.1.1 (2026-11-13)
 - Spelling only: unified "M.Sc." in the README. Adds CHANGELOG.md and CITATION.cff. No code change from v1.1.
 
