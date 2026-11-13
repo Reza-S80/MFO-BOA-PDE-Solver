@@ -3,5 +3,6 @@ numpy
 scipy
 pandas
 matplotlib
-joblib
 ipython
+# joblib is optional — install only for parallel runs
+joblib
