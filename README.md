@@ -12,6 +12,8 @@ Hybrid Moth-Flame Optimization (MFO) + Butterfly Optimization Algorithm (BOA) wi
 
 Burgers' equation: the hybrid MFO–BOA optimizer reduced RMSE by 62% versus standalone MFO and by 69% versus standalone BOA. Wilcoxon signed-rank tests: p = 0.003 versus MFO and p = 0.001 versus BOA. These results are from the M.Sc. thesis; this repository does not include a PINN baseline experiment.
 
+![Mean RMSE on Burgers' equation over 30 independent runs (thesis Table 3-2)](docs/rmse-burgers.png)
+
 | Method | Mean RMSE |
 |---|---|
 | Hybrid MFO–BOA | 2.8e-4 |
@@ -46,6 +48,12 @@ python diag_eansatz2.py notebook_code.py
 
 Solving Nonlinear Partial Differential Equations Using the Hybrid Moth-Flame and Butterfly Metaheuristic Algorithm and Its Applications in Engineering Problems — M.Sc. thesis, Damghan University, 2026.
 
+## How to cite
+If you use this code, please cite the M.Sc. thesis (see CITATION.cff):
+> Sangari Abiz, R. (2026). Solving Nonlinear Partial Differential Equations Using the Hybrid Moth-Flame and Butterfly Metaheuristic Algorithm and Its Applications in Engineering Problems. M.Sc. thesis, Damghan University.
+
 ## License
 
 MIT.
+
+See CHANGELOG.md for version history.
