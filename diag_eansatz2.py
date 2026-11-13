@@ -12,7 +12,7 @@ import os, sys, json
 os.environ["MPLBACKEND"] = "Agg"
 os.environ["NB_MODE"] = "DEMO"
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else "/home/hatch/workspace/thesis-code/debug-bundle/notebook_code.py"
+SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "notebook_code.py")
 SEGMENTS = [(1, 460), (496, 500), (628, 630), (632, 632), (634, 650)]
 # sanity: each segment must start at an expected marker, else the line numbers drifted
 _MARKERS = ["", "def lstsq_fit", "def run_seed", "X_EVAL", "def run_one"]
@@ -106,6 +106,6 @@ print(f"IC exact: yes (g(0)=0). max|c| = {np.abs(c2).max():.3f}", flush=True)
 print("---- RESULT ----", flush=True)
 # NOTE: A3' rank-1 test is vacuous (E=g(t)r(x) is rank-1 by construction) — reported, not gated.
 ok = (A2_rmse <= 2 * TARGET)
-print(f"A2'={A2_rmse:.3e} (thesis 3.2e-5, 2x = {2*TARGET:.1e}), rank1={rank_ratio:.1e}", flush=True)
-with open("/home/hatch/workspace/thesis-code/diag_eansatz2.json", "w") as f:
+
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "diag_eansatz2.json"), "w") as f:
     json.dump(dict(A1=A1_rmse, A2=A2_rmse, rank_ratio=rank_ratio, ok=bool(ok)), f, indent=1)
