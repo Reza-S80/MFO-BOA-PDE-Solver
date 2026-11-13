@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.3 (2026-11-13)
+- Linked the CITATION.cff and CHANGELOG.md references in the README; marked joblib optional in requirements.txt. No code change from v1.1.2.
+
 ## v1.1.2 (2026-11-13)
 - Strengthened CITATION.cff (author ORCID + repository URL); added a "How to cite" section, an RMSE figure (docs/rmse-burgers.png), and a CHANGELOG link to the README. No code change from v1.1.1.
 
