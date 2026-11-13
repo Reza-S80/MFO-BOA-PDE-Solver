@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Solving Nonlinear Partial Differential Equations Using the Hybrid Moth-Flame and Butterfly Metaheuristic Algorithm and Its Applications in Engineering Problems"
+authors:
+  - family-names: "Sangari Abiz"
+    given-names: "Reza"
+    affiliation: "Damghan University"
+date-released: 2026-11-13
+version: v1.1.1
+license: MIT
