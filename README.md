@@ -24,7 +24,7 @@ Mean RMSE on Burgers' equation over 30 independent runs (thesis Table 3-2).
 
 ## Requirements
 
-- Python 3.10 or later, NumPy, SciPy, pandas, matplotlib; joblib optional (falls back to sequential execution); IPython for `display`.
+- Python 3.10 or later, NumPy, SciPy, pandas, matplotlib; IPython for display; joblib optional (falls back to sequential execution).
 
 ## Installation
 
@@ -49,11 +49,11 @@ python diag_eansatz2.py notebook_code.py
 Solving Nonlinear Partial Differential Equations Using the Hybrid Moth-Flame and Butterfly Metaheuristic Algorithm and Its Applications in Engineering Problems — M.Sc. thesis, Damghan University, 2026.
 
 ## How to cite
-If you use this code, please cite the M.Sc. thesis (see CITATION.cff):
+If you use this code, please cite the M.Sc. thesis (see [CITATION.cff](CITATION.cff)):
 > Sangari Abiz, R. (2026). Solving Nonlinear Partial Differential Equations Using the Hybrid Moth-Flame and Butterfly Metaheuristic Algorithm and Its Applications in Engineering Problems. M.Sc. thesis, Damghan University.
 
 ## License
 
 MIT.
 
-See CHANGELOG.md for version history.
+See [CHANGELOG.md](CHANGELOG.md) for version history.
