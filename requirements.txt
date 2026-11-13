@@ -1,0 +1,7 @@
+# Core dependencies (unpinned). joblib is optional — the solver falls back to sequential execution without it. ipython is required (IPython.display is imported unguarded).
+numpy
+scipy
+pandas
+matplotlib
+joblib
+ipython
