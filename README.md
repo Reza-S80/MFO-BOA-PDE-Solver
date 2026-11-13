@@ -12,16 +12,24 @@ Hybrid Moth-Flame Optimization (MFO) + Butterfly Optimization Algorithm (BOA) wi
 
 Burgers' equation: the hybrid MFO–BOA optimizer reduced RMSE by 62% versus standalone MFO and by 69% versus standalone BOA. Wilcoxon signed-rank tests: p = 0.003 versus MFO and p = 0.001 versus BOA. These results are from the MSc thesis; this repository does not include a PINN baseline experiment.
 
+| Method | Mean RMSE |
+|---|---|
+| Hybrid MFO–BOA | 2.8e-4 |
+| Standalone MFO | 7.3e-4 |
+| Standalone BOA | 9.1e-4 |
+
+Mean RMSE on Burgers' equation over 30 independent runs (thesis Table 3-2).
+
 ## Requirements
 
-- Python 3, NumPy, SciPy, pandas, matplotlib; joblib optional (falls back to sequential execution); IPython for `display`.
+- Python 3.10 or later, NumPy, SciPy, pandas, matplotlib; joblib optional (falls back to sequential execution); IPython for `display`.
 
 ## Installation
 
 ```bash
 git clone https://github.com/Reza-S80/MFO-BOA-PDE-Solver.git
 cd MFO-BOA-PDE-Solver
-pip install numpy scipy pandas matplotlib joblib ipython
+pip install -r requirements.txt
 ```
 
 ## Usage
