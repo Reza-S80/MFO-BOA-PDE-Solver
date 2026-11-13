@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.4 (2026-11-13)
+- Made joblib truly optional in requirements.txt (commented out; `pip install -r requirements.txt` no longer installs it). No code change from v1.1.3.
+
 ## v1.1.3 (2026-11-13)
 - Linked the CITATION.cff and CHANGELOG.md references in the README; marked joblib optional in requirements.txt. No code change from v1.1.2.
 
