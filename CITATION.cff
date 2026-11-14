@@ -9,4 +9,5 @@ authors:
 date-released: 2026-11-14
 version: v1.1.5
 doi: 10.5281/zenodo.24222697
+license: MIT
 url: "https://github.com/Reza-S80/MFO-BOA-PDE-Solver"
