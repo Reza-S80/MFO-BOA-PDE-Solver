@@ -13,7 +13,7 @@ os.environ["MPLBACKEND"] = "Agg"
 os.environ["NB_MODE"] = "DEMO"
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "notebook_code.py")
-SEGMENTS = [(1, 460), (496, 500), (628, 630), (632, 632), (634, 650)]
+SEGMENTS = [(1, 460), (513, 517), (645, 647), (649, 649), (651, 667)]
 # sanity: each segment must start at an expected marker, else the line numbers drifted
 _MARKERS = ["", "def lstsq_fit", "def run_seed", "X_EVAL", "def run_one"]
 ns = {"__name__": "eansatz2"}

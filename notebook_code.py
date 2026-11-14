@@ -56,6 +56,8 @@ MAX_EVALS = N_POP * (1 + T_UPD)          # شامل N_POP ارزیابی اول�
 N_RUNS = CFG["n_runs"]
 
 # هش پیکربندی برای اعتبارسنجی چک‌پوینت (جلوگیری از بارگذاری نتایج کهنه پس از تغییر کد/پارامتر)
+# W_FIT پیش از _config_hash تعریف می‌شود: CFG_HASH در زمان فراخوانی به آن ارجاع می‌دهد.
+W_FIT = dict(w1=1.0, w2=20.0, w3=20.0)   # ASSUMPTION: وزن‌های برازندگی
 def _config_hash():
     _h = hashlib.sha256()
     _h.update(json.dumps(CFG, sort_keys=True, default=str).encode())
@@ -73,7 +75,6 @@ CFG_HASH = _config_hash()
 
 # ابعاد پایه برای «تعداد کل ضرایب» n (ASSUMPTION: n = nx*nt)
 NXNT = {16: (4, 4), 20: (4, 5), 25: (5, 5), 30: (5, 6), 36: (6, 6), 64: (8, 8), 100: (10, 10), 144: (12, 12)}
-W_FIT = dict(w1=1.0, w2=20.0, w3=20.0)   # ASSUMPTION: وزن‌های برازندگی
 COEF_BOUNDS = (-2.0, 2.0)
 NCX, NCT = 30, 20                        # ۶۰۰ نقطه‌ی کالوکیشن
 N_IC, N_BC = 41, 41

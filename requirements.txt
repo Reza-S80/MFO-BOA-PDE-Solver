@@ -1,8 +1,12 @@
-# Core dependencies (unpinned). joblib is optional — the solver falls back to sequential execution without it. ipython is required (IPython.display is imported unguarded).
-numpy
-scipy
-pandas
-matplotlib
-ipython
+# Tested environment — clean venv, Python 3.12.3, resolved 2026-11-14.
+# numpy==2.5.4 and scipy==1.18.1 require Python >= 3.12; CI runs Python 3.12.
+# Do not lower the Python version without re-resolving and re-testing.
+# joblib is optional — the solver falls back to sequential execution without it.
+# ipython is required (IPython.display is imported unguarded).
+numpy==2.5.4
+scipy==1.18.1
+pandas==3.1.1
+matplotlib==3.11.2
+ipython==9.18.1
 # joblib is optional — install only for parallel runs
 # joblib

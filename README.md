@@ -24,7 +24,7 @@ Mean RMSE on Burgers' equation over 30 independent runs (thesis Table 3-2).
 
 ## Requirements
 
-- Python 3.10 or later, NumPy, SciPy, pandas, matplotlib; IPython for display; joblib optional (falls back to sequential execution).
+- Python 3.12, NumPy, SciPy, pandas, matplotlib; IPython for display; joblib optional (falls back to sequential execution).
 
 ## Installation
 
