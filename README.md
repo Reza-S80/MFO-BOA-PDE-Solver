@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24222697.svg)](https://doi.org/10.5281/zenodo.24222697)
 # MFO-BOA-PDE-Solver
 
 Hybrid Moth-Flame Optimization (MFO) + Butterfly Optimization Algorithm (BOA) with B-spline collocation for solving nonlinear partial differential equations. M.Sc. thesis code, Damghan University (2026).
