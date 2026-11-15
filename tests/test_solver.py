@@ -40,8 +40,9 @@ tests below deliberately do NOT assert that it does:
   No optimizer in the repo's configuration space can beat the lstsq floor,
   so Table 3-2 is not reproducible by this code as configured (FULL uses
   the same 5x5 default). Heat and diffusion are different: their floors
-  reach the thesis values at n=100-144. See FIXES.md for the floor table
-  and what would be needed to close the gap.
+  reach the thesis values at n=100-144. The floor values above are the floor
+  table; what would close the gap is a larger approximation space (more
+  coefficients) or the thesis's original coefficient representation.
 - The tests therefore assert (a) the machinery is correct (checks 1-5),
   (b) the budget contract and finiteness, (c) the DEMO results match the
   recorded clean-env DEMO values within 5% (regression guard), and
@@ -50,9 +51,9 @@ tests below deliberately do NOT assert that it does:
   The FULL configuration is checked statically (it is the thesis
   configuration: n_runs=30, n_pop=50, T_updates=200).
 
-Measured DEMO values below come from the clean-env DEMO run recorded in
-phase1/demo-run-log-2026-11-14.txt (exit 0, 159 s). If the code changes,
-re-run the DEMO and update the constants from the new log — never from memory.
+Measured DEMO values below come from a clean-env DEMO run (exit 0, 159 s,
+2026-11-14, this VM). If the code changes, re-run the DEMO and update the
+constants from the new log — never from memory.
 """
 
 import csv
@@ -204,7 +205,12 @@ class TestDemoRun(unittest.TestCase):
                          f"could not parse check-3 floors from stdout: {floors}")
         for r in self.rows:
             floor = floors[r["problem"]]
-            self.assertGreaterEqual(float(r["RMSE"]), 0.9 * floor,
+            # Tolerance-based lower bound: the floor is a mathematical lower
+            # bound, so RMSE must be >= floor up to float noise. (The old
+            # 0.9 * floor slack contradicted the stated bound — post-merge
+            # panel review, ChatGPT, 2026-11-15.)
+            tol = max(1e-12, 1e-10 * abs(floor))
+            self.assertGreaterEqual(float(r["RMSE"]), floor - tol,
                                     f"RMSE below the lstsq floor in row {r}")
 
     def test_ofat_csv_written(self):

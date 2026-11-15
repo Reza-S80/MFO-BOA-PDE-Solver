@@ -20,7 +20,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SRC = REPO_ROOT / "src"
 MODULES = ("config", "problems", "basis", "solver", "optimizers",
-           "diagnostics", "experiment")
+           "diagnostics", "experiment", "__main__")
 
 
 def _run_import(code, cwd):

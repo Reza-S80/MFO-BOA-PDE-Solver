@@ -33,14 +33,19 @@ RTOL = 1e-12
 ATOL = 1e-14
 
 
-def _canonicalize(tmpdir):
-    """Canonical per-run / OFAT / CSV / diag data from a DEMO temp dir."""
+def _canonicalize(tmpdir, mode="DEMO"):
+    """Canonical per-run / OFAT / CSV / diag data from a <mode> temp dir.
+
+    mode is "DEMO" (default) or "FULL": checkpoint/CSV filenames carry the
+    mode. The diag file is read only if present — diag_eansatz2.py is
+    DEMO-only by design, so a FULL run has no diag output.
+    """
     tmpdir = Path(tmpdir)
     out = {"runs": {}, "ofat_rows": [], "results_rows": [], "diag": None}
 
     for key in ("heat", "burgers", "diffusion"):
-        for pkl in sorted(tmpdir.glob(f"ckpt_DEMO_*_{key}.pkl")):
-            if not re.fullmatch(r"ckpt_DEMO_[0-9a-f]{12}_" + key + r"\.pkl", pkl.name):
+        for pkl in sorted(tmpdir.glob(f"ckpt_{mode}_*_{key}.pkl")):
+            if not re.fullmatch(r"ckpt_" + mode + r"_[0-9a-f]{12}_" + key + r"\.pkl", pkl.name):
                 continue  # OFAT checkpoints (bare DataFrames) are not runs
             with open(pkl, "rb") as f:
                 R = pickle.load(f)
@@ -59,9 +64,9 @@ def _canonicalize(tmpdir):
                         R["curves"][(row["algorithm"], int(row["run"]))], float),
                 }
 
-    with open(tmpdir / "ofat_DEMO.csv", newline="") as f:
+    with open(tmpdir / f"ofat_{mode}.csv", newline="") as f:
         out["ofat_rows"] = list(csv.DictReader(f))
-    with open(tmpdir / "results_DEMO.csv", newline="") as f:
+    with open(tmpdir / f"results_{mode}.csv", newline="") as f:
         out["results_rows"] = list(csv.DictReader(f))
     diag_path = tmpdir / "diag_eansatz2.json"
     if diag_path.exists():

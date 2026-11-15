@@ -45,14 +45,19 @@ def _config_hash():
     _h.update(json.dumps(ALG_PARAMS, sort_keys=True, default=str).encode())
     _h.update(json.dumps(W_FIT, sort_keys=True, default=str).encode())
     _h.update(f"{MODE}|{MASTER_SEED}|{MAX_EVALS}|{N_RUNS}".encode())
-    try:
-        _pkg = os.path.dirname(os.path.abspath(__file__))
-        for _name in sorted(os.listdir(_pkg)):
-            if _name.endswith(".py"):
-                with open(os.path.join(_pkg, _name), "rb") as _sf:
+    _pkg = os.path.dirname(os.path.abspath(__file__))
+    for _name in sorted(os.listdir(_pkg)):
+        if _name.endswith(".py"):
+            _path = os.path.join(_pkg, _name)
+            try:
+                with open(_path, "rb") as _sf:
                     _h.update(_sf.read())
-    except Exception:
-        pass
+            except OSError as _e:
+                # Fail loudly: a silently skipped file would let a partial
+                # hash accept a stale checkpoint (post-merge panel review,
+                # DeepSeek + ChatGPT, 2026-11-15).
+                raise RuntimeError(
+                    f"_config_hash: cannot read {_path}: {_e}") from _e
     return _h.hexdigest()[:12]
 
 

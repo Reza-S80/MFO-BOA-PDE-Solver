@@ -118,3 +118,62 @@ baseline recorded in this directory (`baseline.json`,
   `git status --short` clean apart from the branch changes;
   `git diff --check` clean. CI runs on the PR (two jobs: default and
   `[parallel]`).
+
+## Post-merge panel review fixes (2026-11-15, after PR #7 merged at c1541ca)
+
+A 5-AI panel (ChatGPT, Gemini, DeepSeek, Manus, Felo) reviewed the merged
+code independently; Cosmo verified every finding against the merged code
+(record: `~/workspace/github/postmerge-panel-verdicts-2026-11-15.md`).
+Panel totals: 0 Critical; 1 Major (ChatGPT — the Burgers approximation floor
+6.801e-02 vs the claimed thesis hybrid RMSE 2.8e-4, ~243x) — a KNOWN
+pre-existing issue, already documented in test_solver.py ("HONEST
+LIMITATION") and by the thesis-config archaeology verdict (NOT RECOVERABLE);
+not a migration defect, no action in this round. Gemini's ranked findings
+were all fabricated against the code (wrong baseline path, wrong diag A2,
+wrong solver.py claims) — none applied. Felo's two Majors were fabricated
+too (a nonexistent test name; a nonexistent `make_solver(**cfg.__dict__)`).
+
+Fixes applied (all Minor, each verified against the code before applying):
+1. `config.py` `_config_hash`: the silent `except Exception: pass` around
+   the source-file read is now a re-raise naming the file (DeepSeek +
+   ChatGPT convergent) — a partial hash can no longer silently accept a
+   stale checkpoint.
+2. `tests/test_solver.py` docstring: removed dangling references to
+   `FIXES.md` and `phase1/demo-run-log-2026-11-14.txt`, which are not in
+   the repo (DeepSeek); the floor values are stated in the docstring itself.
+3. `diag_eansatz2.py`: `os.environ["NB_MODE"] = "DEMO"` is now
+   `os.environ.setdefault("NB_MODE", "DEMO")` (DeepSeek) — an explicitly
+   set NB_MODE is respected; default remains DEMO.
+4. `src/mfo_boa_pde/__main__.py` (new): `python -m mfo_boa_pde` now works,
+   delegating to `experiment.main()` (Felo); the notebook_code.py launcher
+   remains the supported entry point. The import-safety suite covers the
+   `__main__` module too.
+5. `tests/test_solver.py` `test_demo_rmse_above_lstsq_floor`: the
+   `0.9 * floor` slack contradicted the comment's "Mathematical lower
+   bound", so the assertion is now `RMSE >= floor - tol` with
+   `tol = max(1e-12, 1e-10 * |floor|)` (ChatGPT).
+6. `tests/test_full_equivalence.py` (new): the FULL comparison is now an
+   automated, opt-in gate (Felo + Manus convergent) — it runs a fresh FULL
+   subprocess and compares 270 runs / 270 results-CSV rows / 1620 OFAT
+   rows against `baseline-full-results.json` at rtol 1e-12 / atol 1e-14.
+   Skipped by default; run with
+   `MFO_BOA_RUN_FULL_EQUIVALENCE=1 python -m unittest tests.test_full_equivalence -v`
+   (~3 min). The diag is not compared (DEMO-only by design; the FULL
+   baseline records diag: null).
+7. `tests/test_parallel.py` (new): a small deterministic test that
+   `_run_all` with n_jobs=2 returns identical ordered values to n_jobs=1
+   (Manus). In the CI parallel job (joblib installed) this exercises the
+   loky multi-worker path; without joblib it documents the sequential
+   fallback (the joblib-gated test skips).
+
+No action taken (recorded for the next reviewer): `diagnostics.py` imports
+matplotlib at module level, but moving it would not make the package
+import-light (`experiment.py` already imports matplotlib); the
+`stderr == ""` import-safety assertion stays as a canary; `CACHE_DIR`
+stays CWD-relative by design; joblib stays unpinned (optional extra); the
+A3 rank check is already disclosed as vacuous in diag_eansatz2.py;
+`baseline.json` is left untouched as Gate-0 evidence — note that its
+`tests.expected_count: 14` describes the PRE-migration baseline suite (14
+tests at e358e80); the post-migration suite is 33 tests (14 solver + 5
+import-safety + 3 compatibility + 5 numerical-equivalence + 4 FULL
+opt-in + 2 parallel), 29 run by default and 4 skipped unless opted in.

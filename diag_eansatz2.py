@@ -13,7 +13,7 @@ import os
 import sys
 
 os.environ["MPLBACKEND"] = "Agg"
-os.environ["NB_MODE"] = "DEMO"
+os.environ.setdefault("NB_MODE", "DEMO")
 
 # Compatibility argument: the old script took the solver script path as
 # sys.argv[1] (it exec'd line-numbered segments from it). The argument is
