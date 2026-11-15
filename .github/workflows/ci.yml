@@ -20,7 +20,24 @@ jobs:
         # Python >= 3.12 (see requirements.txt). Do not lower this without
         # re-resolving and re-testing the pins.
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -e .
+      - name: Run tests
+        env:
+          MPLBACKEND: Agg
+        run: python -m unittest discover -s tests -v
+
+  test-parallel:
+    # Same suite with the optional joblib extra installed (parallel path).
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[parallel]"
       - name: Run tests
         env:
           MPLBACKEND: Agg

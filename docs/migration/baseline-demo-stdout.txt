@@ -1,0 +1,209 @@
+joblib یافت نشد — اجرای ترتیبی
+MODE=DEMO | runs=3 | N=20 | T(update generations)=99 | max_evals=2000
+n_jobs=1 | collocation=30x20=600 | weights={'w1': 1.0, 'w2': 20.0, 'w3': 20.0} | bounds=(-2.0, 2.0)
+ماشین B-spline تعریف شد.
+الگوریتم‌ها: ['MFO', 'BOA', 'MFO-BOA']
+مسائل تعریف شد.
+[PASS] ۱ partition of unity max|ΣB-1|=4.44e-16
+[PASS] ۱ بازتولید چندجمله‌ای تا درجه‌ی ۳ max خطای نسبی=6.66e-16
+[PASS] ۲ مشتق اول max|Δ|=4.25e-10
+[PASS] ۲ مشتق دوم max|Δ|=7.80e-10
+[PASS] ۳ برازش lstsq (heat) RMSE_approx=1.211e-02
+[PASS] ۳ برازش lstsq (burgers) RMSE_approx=6.801e-02
+[PASS] ۳ برازش lstsq (diffusion) RMSE_approx=8.017e-03
+
+خطای تقریب فضای پایه (روی شبکه‌ی اعتبارسنجی) و عدد شرطی ماتریس طرح A:
+           n_coeffs  rmse_approx  maxae_approx  rms_of_reference  cond_design  ref_error_est
+problem                                                                                     
+heat             16      0.01211        0.0454            0.4629           31              0
+burgers          25      0.06801        0.5603            0.5941        26.71      2.381e-11
+diffusion        25     0.008017       0.07373            0.4671        26.71      3.345e-07
+خطای تقریب lstsq برحسب تعداد کل ضرایب (کران پایین RMSE برای هر الگوریتم بهینه‌سازی روی همین فضا):
+problem   burgers  diffusion      heat
+n_coeffs                              
+16        0.08199     0.0126   0.01211
+20        0.08047    0.01149   0.01211
+25        0.06801   0.008017  0.001258
+30        0.06762   0.007777  0.001258
+36        0.05584   0.003666 0.0007262
+64        0.03706    0.00128 7.634e-05
+100       0.02409  0.0004817 1.854e-05
+144        0.0152  0.0002317 6.579e-06
+[PASS] ۴ جواب ساختگی (heat) F(θ*)=2.29e-32, F(θ*+δ)=2.44e-03
+[PASS] ۴ جواب ساختگی (burgers) F(θ*)=1.83e-32, F(θ*+δ)=1.41e-03
+[PASS] ۴ جواب ساختگی (diffusion) F(θ*)=1.89e-32, F(θ*+δ)=3.89e-03
+           F_at_theta_star  F_perturbed
+problem                                
+heat             2.285e-32     0.002437
+burgers          1.833e-32     0.001412
+diffusion        1.891e-32     0.003886
+[PASS] ۵ Σr² = F (heat) خطای نسبی=0.0e+00
+[PASS] ۵ L-BFGS-B ≤ مبنای lstsq (heat) F_LBFGSB=5.528e-02 ≤ F_lstsq=8.116e-02
+[PASS] ۵ Σr² = F (burgers) خطای نسبی=0.0e+00
+[PASS] ۵ L-BFGS-B ≤ مبنای lstsq (burgers) F_LBFGSB=2.268e-01 ≤ F_lstsq=2.075e+00
+[PASS] ۵ Σr² = F (diffusion) خطای نسبی=2.1e-16
+[PASS] ۵ L-BFGS-B ≤ مبنای lstsq (diffusion) F_LBFGSB=9.408e-02 ≤ F_lstsq=1.300e-01
+مبناهای scipy (برازندگی نهایی و RMSE روی شبکه‌ی اعتبارسنجی):
+           F_lstsq_baseline  F_LBFGSB_best  F_least_squares_best  F_LBFGSB_from_lstsq_start  RMSE_LBFGSB  RMSE_lstsq
+problem                                                                                                             
+heat                0.08116        0.05528               0.05528                    0.05528      0.02478     0.01211
+burgers               2.075         0.2268                0.2268                     0.2268       0.2013     0.06801
+diffusion              0.13        0.09408               0.09408                    0.09408      0.01603    0.008017
+[PASS] ۶ Sphere / MFO  ratio=0.366 (آستانه‌ی 0.5)
+[PASS] ۶ Sphere / BOA  ratio=0.413 (آستانه‌ی 0.5)
+[PASS] ۶ Sphere / MFO-BOA  ratio=0.244 (آستانه‌ی 0.5)
+   مرجع: جستجوی تصادفی هم‌بودجه روی Sphere: میانه‌ی بهترین = 14.72
+[FAIL] ۶ Rastrigin / MFO  ratio=0.941 (آستانه‌ی 0.5)
+[FAIL] ۶ Rastrigin / BOA  ratio=0.75 (آستانه‌ی 0.5)
+[FAIL] ۶ Rastrigin / MFO-BOA  ratio=0.637 (آستانه‌ی 0.5)
+   مرجع: جستجوی تصادفی هم‌بودجه روی Rastrigin: میانه‌ی بهترین = 75.15
+                     dim  budget  median_initial_best  median_final_best  ratio  thr verdict
+function  algorithm                                                                         
+Sphere    MFO         10    2000                53.15              19.47 0.3663  0.5    PASS
+          BOA         10    2000                53.15              21.95 0.4131  0.5    PASS
+          MFO-BOA     10    2000                53.15              12.99 0.2444  0.5    PASS
+Rastrigin MFO         10    2000                121.4              114.3 0.9413  0.5    FAIL
+          BOA         10    2000                121.4              90.99 0.7495  0.5    FAIL
+          MFO-BOA     10    2000                121.4               77.3 0.6368  0.5    FAIL
+
+خلاصه‌ی اعتبارسنجی: برخی ردیف‌های بنچمارک در آستانه‌ی عملکردی رد شدند (جزئیات بالا)؛ رد شدن ≠ باگ.
+                worst_value            criterion
+test                                            
+1 PoU             4.441e-16               <1e-12
+1 poly            6.661e-16               <1e-12
+2 d/dx            4.254e-10                <1e-6
+2 d2/dx2          7.798e-10                <1e-5
+3 lstsq             0.06801  finite & < rms(ref)
+4 manufactured    2.285e-32               <1e-24
+5 scipy              0.7238                  <=1
+6 benchmarks         0.9413            ratio<0.5
+توابع اجرا و آمار تعریف شد.
+heat: n_coeffs=16 (nx=4, nt=4) | grid validation=(59, 39) | collocation=30x20
+خطای مرجع (جواب دقیق): 0.0
+cond(A)=3.100e+01 | خطای تقریب فضای پایه: RMSE=1.211e-02, MaxAE=4.540e-02
+چک‌پوینت ذخیره شد: ckpt_DEMO_a4dbf673b7b8_heat.pkl
+══ Heat | runs=3 | max_evals=2000 ══
+            mean     std  median     IQR  MaxAE_mean  success_rate  sr_lo95  sr_hi95  time_mean_s
+algorithm                                                                                        
+MFO       0.3503  0.1207  0.3913  0.1154       1.206             0        0   0.5615       0.0394
+BOA       0.4521 0.06654  0.4484 0.06646       0.933             0        0   0.5615      0.03562
+MFO-BOA   0.4228  0.1882  0.4824   0.181       1.013             0        0   0.5615       0.0282
+Friedman: χ²=0.6667, p=0.7165, n=3 | mean ranks: MFO=1.67, BOA=2.00, MFO-BOA=2.33 | Nemenyi CD(0.05)=1.914
+                median_diff  p_value  effect_r_rb  wins_first  n  p_Holm  p_Bonferroni  significant_Holm_0.05
+pair                                                                                                         
+MFO-BOA vs MFO      0.09114     0.75       0.3333           1  3       1             1                  False
+MFO-BOA vs BOA      0.05364        1            0           1  3       1             1                  False
+MFO vs BOA        -0.003195     0.75      -0.3333           2  3       1             1                  False
+[PASS] برگرز: اختلاف دو truncation مرجع < 1e-6 max|ΔU|=2.38e-11
+[PASS] برگرز: شرط اولیه 
+[PASS] برگرز: شرایط مرزی max|u(0,t)|=6.3e-17, max|u(1,t)|=1.8e-15
+[PASS] برگرز: باقیمانده‌ی PDE روی جواب کول–هاپف (نقاط هموار) max|R|=1.44e-06
+x*=1.000 | ناحیه‌ی شوک با چگالی ۳ برابر: [0.850, 1.000]
+burgers: n_coeffs=25 | cond(A)=2.671e+01 | خطای تقریب فضای پایه RMSE=6.801e-02, MaxAE=5.603e-01
+نقاط x کالوکیشن: min Δx=0.0144, max Δx=0.0433
+چک‌پوینت ذخیره شد: ckpt_DEMO_a4dbf673b7b8_burgers.pkl
+══ Burgers | runs=3 | max_evals=2000 ══
+            mean     std  median     IQR  MaxAE_mean  success_rate  sr_lo95  sr_hi95  time_mean_s
+algorithm                                                                                        
+MFO       0.6179  0.1528  0.5504  0.1412       1.329             0        0   0.5615      0.02346
+BOA        0.595 0.09604  0.5427 0.08471       1.328             0        0   0.5615      0.03318
+MFO-BOA   0.6125 0.07085  0.5984 0.06978       1.274             0        0   0.5615      0.05331
+Friedman: χ²=0.6667, p=0.7165, n=3 | mean ranks: MFO=2.00, BOA=1.67, MFO-BOA=2.33 | Nemenyi CD(0.05)=1.914
+                median_diff  p_value  effect_r_rb  wins_first  n  p_Holm  p_Bonferroni  significant_Holm_0.05
+pair                                                                                                         
+MFO-BOA vs MFO      0.04797        1            0           1  3       1             1                  False
+MFO-BOA vs BOA       0.0134     0.75       0.3333           1  3       1             1                  False
+MFO vs BOA         0.007683     0.75       0.3333           1  3       1             1                  False
+حساسیت خطای تقریب به SHOCK_DENSITY_RATIO — برازش lstsq روی نقاط کالوکیشن هر نسبت، ارزیابی روی شبکه‌ی اعتبارسنجی ثابت و مستقل:
+               rmse_validation  maxae_validation
+density_ratio                                   
+1                      0.07459            0.7583
+2                      0.07136            0.6881
+3                      0.07147              0.66
+5                      0.07315            0.6302
+یادداشت: این مطالعه‌ی سبک جایگزین جاروب کامل بهینه‌سازی نیست و نتایج آن نتایج پژوهش نیستند.
+پالایش شبکه‌ی مرجع: {'ref_error_est': '3.345e-07', 'diff_400_800': '4.014e-06', 'diff_800_1600': '1.003e-06'}
+[PASS] انتشار: همگرایی پالایش شبکه (800→1600 کوچک‌تر از 400→800) 
+[PASS] انتشار: برآورد خطای مرجع < 1e-5 3.34e-07
+diffusion: n_coeffs=25 | cond(A)=2.671e+01 | خطای تقریب فضای پایه RMSE=8.017e-03, MaxAE=7.373e-02
+چک‌پوینت ذخیره شد: ckpt_DEMO_a4dbf673b7b8_diffusion.pkl
+══ Nonlinear diffusion | runs=3 | max_evals=2000 ══
+            mean     std  median     IQR  MaxAE_mean  success_rate  sr_lo95  sr_hi95  time_mean_s
+algorithm                                                                                        
+MFO       0.3955 0.06906  0.4152 0.06692       1.751             0        0   0.5615      0.02638
+BOA        0.385  0.1439  0.4411  0.1355       1.187             0        0   0.5615      0.04452
+MFO-BOA   0.3256 0.08609  0.3336 0.08581      0.8116             0        0   0.5615      0.03217
+Friedman: χ²=0.6667, p=0.7165, n=3 | mean ranks: MFO=2.33, BOA=2.00, MFO-BOA=1.67 | Nemenyi CD(0.05)=1.914
+                median_diff  p_value  effect_r_rb  wins_first  n  p_Holm  p_Bonferroni  significant_Holm_0.05
+pair                                                                                                         
+MFO-BOA vs MFO     -0.08163     0.75      -0.3333           2  3       1             1                  False
+MFO-BOA vs BOA      -0.1589     0.75      -0.3333           2  3       1             1                  False
+MFO vs BOA          0.01152     0.75       0.3333           1  3       1             1                  False
+چک‌پوینت OFAT ذخیره شد: ckpt_DEMO_a4dbf673b7b8_ofat_heat.pkl
+══ OFAT — Heat (runs per level = 3) ══
+              RMSE_mean  RMSE_std  RMSE_median  n_coeffs  time_mean_s  n_evals  lstsq_approx_RMSE
+factor level                                                                                     
+N      10        0.1529   0.02575       0.1506        16      0.04374     2000                NaN
+       20        0.4025    0.1969       0.4479        16      0.02723     2000                NaN
+HR     0.2       0.2735   0.09347       0.2225        16      0.02654     2000                NaN
+       0.5       0.4025    0.1969       0.4479        16      0.02706     2000                NaN
+       0.8       0.3155    0.1118       0.2582        16      0.02804     2000                NaN
+n      16        0.4025    0.1969       0.4479        16      0.02777     2000            0.01211
+       25        0.6633    0.2756        0.734        25      0.02972     2000           0.001258
+K      5         0.3307    0.1875       0.2709        16      0.02774     2000                NaN
+       10        0.4025    0.1969       0.4479        16      0.02649     2000                NaN
+چک‌پوینت OFAT ذخیره شد: ckpt_DEMO_a4dbf673b7b8_ofat_burgers.pkl
+══ OFAT — Burgers (runs per level = 3) ══
+              RMSE_mean  RMSE_std  RMSE_median  n_coeffs  time_mean_s  n_evals  lstsq_approx_RMSE
+factor level                                                                                     
+N      10        0.3467   0.06251       0.3788        25      0.07258     2000                NaN
+       20        0.5196    0.0799       0.5216        25      0.03072     2000                NaN
+HR     0.2       0.3208    0.0203       0.3258        25      0.03005     2000                NaN
+       0.5       0.5196    0.0799       0.5216        25       0.0311     2000                NaN
+       0.8       0.6528    0.1946       0.5773        25      0.03175     2000                NaN
+n      16        0.5099   0.04653       0.4969        16      0.02897     2000            0.08199
+       25        0.5196    0.0799       0.5216        25      0.02992     2000            0.06801
+K      5         0.3471   0.03239        0.364        25      0.03003     2000                NaN
+       10        0.5196    0.0799       0.5216        25      0.03025     2000                NaN
+چک‌پوینت OFAT ذخیره شد: ckpt_DEMO_a4dbf673b7b8_ofat_diffusion.pkl
+══ OFAT — Nonlinear diffusion (runs per level = 3) ══
+              RMSE_mean  RMSE_std  RMSE_median  n_coeffs  time_mean_s  n_evals  lstsq_approx_RMSE
+factor level                                                                                     
+N      10        0.3974    0.1208       0.4591        25      0.08222     2000                NaN
+       20        0.2441   0.02655       0.2499        25      0.03301     2000                NaN
+HR     0.2       0.4148    0.1697       0.5067        25      0.03211     2000                NaN
+       0.5       0.2441   0.02655       0.2499        25      0.03344     2000                NaN
+       0.8        0.311   0.05566       0.2861        25      0.03305     2000                NaN
+n      16         0.259   0.08645       0.2571        16      0.03133     2000             0.0126
+       25        0.2441   0.02655       0.2499        25      0.03351     2000           0.008017
+K      5         0.2844   0.08261       0.2437        25      0.03262     2000                NaN
+       10        0.2441   0.02655       0.2499        25      0.03278     2000                NaN
+ذخیره شد: results_DEMO.csv (27 سطر) و ofat_DEMO.csv (81 سطر)
+assert نهایی: همه‌ی اجراهای اصلی دقیقاً 2000 ارزیابی مصرف کردند. ✔
+                     RMSE_mean  time_mean_s  n_evals
+problem   algorithm                                 
+burgers   BOA            0.595      0.03318     2000
+          MFO           0.6179      0.02346     2000
+          MFO-BOA       0.6125      0.05331     2000
+diffusion BOA            0.385      0.04452     2000
+          MFO           0.3955      0.02638     2000
+          MFO-BOA       0.3256      0.03217     2000
+heat      BOA           0.4521      0.03562     2000
+          MFO           0.3503       0.0394     2000
+          MFO-BOA       0.4228       0.0282     2000
+Python      : 3.12.3 | Linux-7.0.0-44-generic-x86_64-with-glibc2.39
+numpy      : 2.5.4
+scipy      : 1.18.1
+pandas     : 3.1.1
+matplotlib : 3.11.2
+joblib     : نصب نیست — اجرای ترتیبی
+MODE: DEMO | MASTER_SEED: 20261021
+ALG_PARAMS: {'b': 1.0, 'c': 0.01, 'a': 0.1, 'p': 0.8, 'K': 10, 'HR': 0.5} | W_FIT: {'w1': 1.0, 'w2': 20.0, 'w3': 20.0} | COEF_BOUNDS: (-2.0, 2.0)
+فهرست seedها (اجراهای اصلی؛ برچسب 0 — بین سه الگوریتم مشترک):
+  heat       [1152057388816448396, 18020325647279164356, 9751190813246743681]
+  burgers    [13509778527877898003, 10171058157490504086, 18195782697231622728]
+  diffusion  [14249218417331443248, 16338826015738693210, 3457035250704289602]
+فهرست seedهای OFAT (برچسب 100):
+  heat       [15397300436618877457, 9309452383747426776, 8380135096884340926]
+  burgers    [6536122853283947861, 4281038191356704226, 11438341441378253781]
+  diffusion  [13716360348332939464, 7221676891947018483, 7970167645006911862]

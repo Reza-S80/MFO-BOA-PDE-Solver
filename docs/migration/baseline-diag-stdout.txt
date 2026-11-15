@@ -1,0 +1,11 @@
+joblib یافت نشد — اجرای ترتیبی
+MODE=DEMO | runs=3 | N=20 | T(update generations)=99 | max_evals=2000
+n_jobs=1 | collocation=30x20=600 | weights={'w1': 1.0, 'w2': 20.0, 'w3': 20.0} | bounds=(-2.0, 2.0)
+ماشین B-spline تعریف شد.
+الگوریتم‌ها: ['MFO', 'BOA', 'MFO-BOA']
+A1' pure projection: spatial RMSE=3.085e-06 -> full RMSE=1.268e-06
+A3' structural: sigma2/sigma1 = 1.04e-16
+A2' unbounded max|c| = 1.011 (bound 2.0)
+A2' PDE-constrained attainable RMSE = 1.485e-05
+IC exact: yes (g(0)=0). max|c| = 1.011
+---- RESULT ----

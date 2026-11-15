@@ -6,11 +6,13 @@ Measured DEMO wall time in the clean env: 159 s (2026-11-14, this VM).
 
 Design notes
 ------------
-notebook_code.py has no main guard: importing it runs the whole experiment.
-Tests therefore run it as a subprocess in a fresh temp directory, so the
-checkpoint files (ckpt_DEMO_*.pkl) cannot mask a failed execution, and assert
-on the exit code, stdout, and the artifacts it writes (results_DEMO.csv,
-ofat_DEMO.csv).
+notebook_code.py is now a thin, import-safe launcher: it bootstraps the
+src/mfo_boa_pde/ package and calls mfo_boa_pde.experiment.main() only under
+`if __name__ == "__main__"`. Tests still run it as a subprocess in a fresh
+temp directory (with a copy of the src/ tree next to it, so the launcher's
+bootstrap finds the package), so the checkpoint files (ckpt_DEMO_*.pkl)
+cannot mask a failed execution, and assert on the exit code, stdout, and
+the artifacts it writes (results_DEMO.csv, ofat_DEMO.csv).
 
 What the DEMO run itself already gates (hard checks, exit non-zero on
 failure): B-spline partition of unity and polynomial reproduction (check 1),
@@ -96,6 +98,8 @@ def _run_demo(tmpdir):
     """Run the DEMO once in a fresh dir; return (returncode, stdout)."""
     for name in ("notebook_code.py", "diag_eansatz2.py"):
         shutil.copy(REPO_ROOT / name, Path(tmpdir) / name)
+    # The launcher bootstraps src/ from its own directory.
+    shutil.copytree(REPO_ROOT / "src", Path(tmpdir) / "src")
     env = dict(os.environ, MPLBACKEND="Agg", NB_MODE="DEMO",
                PYTHONUNBUFFERED="1")
     proc = subprocess.run(
@@ -220,6 +224,8 @@ class TestDiagEansatz2(unittest.TestCase):
         cls.tmpdir = tempfile.mkdtemp(prefix="solver-diag-")
         for name in ("notebook_code.py", "diag_eansatz2.py"):
             shutil.copy(REPO_ROOT / name, Path(cls.tmpdir) / name)
+        # diag_eansatz2.py imports the package from src/ next to itself.
+        shutil.copytree(REPO_ROOT / "src", Path(cls.tmpdir) / "src")
         env = dict(os.environ, MPLBACKEND="Agg", NB_MODE="DEMO",
                    PYTHONUNBUFFERED="1")
         cls.proc = subprocess.run(
@@ -262,8 +268,9 @@ class TestStaticConfig(unittest.TestCase):
         # (30 runs, n_pop=50, T=200, max_evals=10050). Checked from the
         # source so the suite does not have to run FULL (hours). Note: FULL
         # uses the same default basis as DEMO, so even FULL cannot beat the
-        # check-3 lstsq floor (see the module docstring).
-        src = (REPO_ROOT / "notebook_code.py").read_text()
+        # check-3 lstsq floor (see the module docstring). The CONFIGS
+        # literal moved verbatim to src/mfo_boa_pde/config.py.
+        src = (REPO_ROOT / "src" / "mfo_boa_pde" / "config.py").read_text()
         m = re.search(r'"FULL":\s*dict\((.*?)\)\s*,?\n\}', src, re.S)
         self.assertIsNotNone(m, "FULL config block not found in source")
         block = m.group(1)

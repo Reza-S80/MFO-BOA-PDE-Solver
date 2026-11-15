@@ -1,0 +1,36 @@
+{
+ "baseline_commit": "e358e806a0f4ecdeac5361facb0e3367c4395319",
+ "python_version": "3.12.3",
+ "master_seed": 20261021,
+ "mode": "DEMO",
+ "config": {
+  "n_runs": 3,
+  "n_pop": 20,
+  "T_updates": 99,
+  "max_evals": 2000
+ },
+ "cfg_hash": "a4dbf673b7b8",
+ "tests": {
+  "expected_count": 14,
+  "framework": "unittest"
+ },
+ "numerical_comparison": {
+  "rtol": 1e-12,
+  "atol": 1e-14
+ },
+ "baseline_demo_wall_s": "~25 (this VM, 2026-11-15; recorded 159 s on 2026-11-14)",
+ "diag": {
+  "A1": 1.267958409687594e-06,
+  "A2": 1.4846972673422742e-05,
+  "rank_ratio": 1.043654172098714e-16,
+  "ok": true
+ },
+ "files": [
+  "baseline-demo-stdout.txt",
+  "baseline-diag-stdout.txt",
+  "baseline-results_DEMO.csv",
+  "baseline-ofat_DEMO.csv",
+  "baseline-diag_eansatz2.json",
+  "baseline-demo-results.json"
+ ]
+}
