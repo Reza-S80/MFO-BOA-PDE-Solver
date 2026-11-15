@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mfo-boa-pde-solver"
+version = "1.1.5"
+description = "Hybrid Moth-Flame and Butterfly Optimization for nonlinear PDE solving using B-spline collocation"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Reza Sangari Abiz" }]
+keywords = ["scientific-machine-learning", "partial-differential-equations", "metaheuristic-optimization",
+  "moth-flame-optimization", "butterfly-optimization", "b-spline", "numerical-methods"]
+classifiers = ["Development Status :: 4 - Beta", "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Mathematics", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+dependencies = ["numpy==2.5.4", "scipy==1.18.1", "pandas==3.1.1", "matplotlib==3.11.2", "ipython==9.18.1"]
+
+[project.optional-dependencies]
+parallel = ["joblib"]
+
+[project.urls]
+Homepage = "https://github.com/Reza-S80/MFO-BOA-PDE-Solver"
+Repository = "https://github.com/Reza-S80/MFO-BOA-PDE-Solver"
+Issues = "https://github.com/Reza-S80/MFO-BOA-PDE-Solver/issues"
+Changelog = "https://github.com/Reza-S80/MFO-BOA-PDE-Solver/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mfo_boa_pde*"]
+namespaces = false
