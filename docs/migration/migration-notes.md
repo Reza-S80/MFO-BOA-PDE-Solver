@@ -170,10 +170,12 @@ No action taken (recorded for the next reviewer): `diagnostics.py` imports
 matplotlib at module level, but moving it would not make the package
 import-light (`experiment.py` already imports matplotlib); the
 `stderr == ""` import-safety assertion stays as a canary; `CACHE_DIR`
-stays CWD-relative by design; joblib stays unpinned (optional extra); the
+stays CWD-relative by design; joblib is pinned to 1.6.0 in the `parallel` extra (round-12 fix, 2026-11-15 — the unpinned state was a round-12 panel finding); the
 A3 rank check is already disclosed as vacuous in diag_eansatz2.py;
 `baseline.json` is left untouched as Gate-0 evidence — note that its
 `tests.expected_count: 14` describes the PRE-migration baseline suite (14
 tests at e358e80); the post-migration suite is 33 tests (14 solver + 5
 import-safety + 3 compatibility + 5 numerical-equivalence + 4 FULL
-opt-in + 2 parallel), 29 run by default and 4 skipped unless opted in.
+opt-in + 2 parallel), 29 run by default (with joblib installed); 28
+without joblib, with 4 skipped (the 4 FULL opt-in tests). Enabling
+MFO_BOA_RUN_FULL_EQUIVALENCE=1 runs all 33 tests.

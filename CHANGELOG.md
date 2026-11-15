@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Migrated the solver into an installable package, `src/mfo_boa_pde` (PR #7, merge c1541ca).
+- Package execution via `python -m mfo_boa_pde`.
+- Import-safety coverage of the `__main__` module.
+- Opt-in FULL numerical-equivalence testing against `baseline-full-results.json` (270 runs, 270 result-CSV rows, 1,620 OFAT rows).
+- Deterministic parallel tests for `_run_all` with `n_jobs=2` versus sequential execution.
+- Numerical-equivalence canonicalization supporting DEMO and FULL modes.
+- Scheduled weekly FULL numerical-equivalence CI job (`.github/workflows/full-equivalence.yml`).
+
+### Fixed
+
+- `_config_hash` re-raises source-file read errors instead of silently accepting incomplete hashes.
+- `diag_eansatz2.py` uses `os.environ.setdefault("NB_MODE", "DEMO")`.
+- Obsolete file references removed from `test_solver.py` documentation.
+- Loose `0.9 * floor` assertion replaced with a tolerance-based lower-bound assertion.
+- README test count corrected from 27 to 33, with the run-count matrix by environment and the FULL opt-in explanation.
+- Burgers headline figures now carry the approximation-floor disclosure (default-basis floor 6.801e-02, ~243x the reported 2.8e-4; largest-basis floor 1.52e-02, ~54x).
+- joblib pinned to 1.6.0 in the `parallel` extra.
+
 ## v1.1.5 (2026-11-14)
 
 - Added a 14-test suite using Python's standard-library `unittest` framework (`tests/test_solver.py`).

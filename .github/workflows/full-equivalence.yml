@@ -1,0 +1,24 @@
+name: FULL Numerical Equivalence
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"  # Every Monday 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  full-equivalence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[parallel]"
+      - name: Run FULL equivalence tests
+        env:
+          MPLBACKEND: Agg
+          MFO_BOA_RUN_FULL_EQUIVALENCE: "1"
+        run: python -m unittest discover -s tests -v
