@@ -1,0 +1,33 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated solver checkpoints
+ckpt_*.pkl
+
+# Generated diagnostic output
+diag_eansatz2.json
+
+# Local environment files
+.env
+.env.*
+
+# Operating system files
+.DS_Store
+Thumbs.db

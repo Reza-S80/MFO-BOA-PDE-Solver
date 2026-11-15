@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.5 (2026-11-14)
+
+- Added a 14-test suite using Python's standard-library `unittest` framework (`tests/test_solver.py`).
+- Added continuous integration testing on Python 3.12.
+- Pinned the tested dependencies: NumPy 2.5.4, SciPy 1.18.1, pandas 3.1.1, matplotlib 3.11.2, and IPython 9.18.1.
+- Fixed the DEMO execution crash caused by `NameError: W_FIT`.
+- Fixed segment drift in `diag_eansatz2.py` by correcting the source-code extraction boundaries.
+- No changes to solver results; README figures remain the thesis-reported values.
+
 ## v1.1.4 (2026-11-13)
 - Made joblib truly optional in requirements.txt (commented out; `pip install -r requirements.txt` no longer installs it). No code change from v1.1.3.
 
