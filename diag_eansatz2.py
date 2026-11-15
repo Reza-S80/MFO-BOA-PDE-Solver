@@ -8,30 +8,42 @@ DeepSeek's objection resolved IF this ansatz reaches ~3.2e-5.
 
 (A1') pure projection; (A2') PDE-constrained exact LS; (A3') rank-1 structural check.
 """
-import os, sys, json
+import json
+import os
+import sys
+
 os.environ["MPLBACKEND"] = "Agg"
 os.environ["NB_MODE"] = "DEMO"
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "notebook_code.py")
-SEGMENTS = [(1, 460), (513, 517), (645, 647), (649, 649), (651, 667)]
-# sanity: each segment must start at an expected marker, else the line numbers drifted
-_MARKERS = ["", "def lstsq_fit", "def run_seed", "X_EVAL", "def run_one"]
-ns = {"__name__": "eansatz2"}
-lines = open(SRC, encoding="utf-8").readlines()
-for (a, b), _m in zip(SEGMENTS, _MARKERS):
-    _first = lines[a - 1].strip()
-    assert _first.startswith(_m), f"segment {a}-{b} starts with unexpected line: {_first[:60]}"
-exec(compile("".join("".join(lines[a - 1:b]) for a, b in SEGMENTS), SRC, "exec"), ns)
-np = ns["np"]
+# Compatibility argument: the old script took the solver script path as
+# sys.argv[1] (it exec'd line-numbered segments from it). The argument is
+# still accepted and existence-checked, but no longer used — the diagnostic
+# now imports the needed names from the mfo_boa_pde package instead.
+if len(sys.argv) > 1 and not os.path.exists(sys.argv[1]):
+    raise SystemExit(f"diag_eansatz2.py: argument not found: {sys.argv[1]}")
 
-p = ns["PROBLEMS"]["heat"]
+# Bootstrap the package from src/ next to this script (editable checkout);
+# fall back to the installed package (pip install -e . / site-packages).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_SRC = os.path.join(_HERE, "src")
+if os.path.isdir(_SRC):
+    sys.path.insert(0, _SRC)
+
+import numpy as np
+from scipy.optimize import lsq_linear
+
+from mfo_boa_pde.basis import basis, load_reference
+from mfo_boa_pde.problems import PROBLEMS
+from mfo_boa_pde.solver import make_points
+
+p = PROBLEMS["heat"]
 a, b, T = p["a"], p["b"], p["T"]
 alpha = p["par"]["alpha"]
 W = {"w1": 1.0, "w2": 20.0, "w3": 20.0}
 TARGET = 3.2e-5
 
-xv, tv, Uref, _ = ns["load_reference"]("heat")
-x_col, t_col, x_ic, t_bc = ns["make_points"]("heat", None)
+xv, tv, Uref, _ = load_reference("heat")
+x_col, t_col, x_ic, t_bc = make_points("heat", None)
 nA = 15
 
 # envelope g(t) = 1 - e^{-t}
@@ -41,7 +53,7 @@ def gp(t): return np.exp(-t)  # g'(t)
 # basis: phi_i(x,t) = g(t) * B_i(x)
 # u_t = g'(t)*B_i ; u_xx = g(t)*B_i''
 # PDE residual: g'*B_i - alpha*g*B_dd_i
-Bx_v = ns["basis"](a, b, nA, xv, nu=0)
+Bx_v = basis(a, b, nA, xv, nu=0)
 
 # (A1') pure projection of (Uref - sin(x)) onto g(t)*B_i(x)
 # Uref - sin(x) = sin(x)*(e^{-t} - 1) = -sin(x)*g(t)
@@ -63,8 +75,8 @@ print(f"A3' structural: sigma2/sigma1 = {rank_ratio:.2e}", flush=True)
 
 # (A2') PDE-constrained: u = sin(x) + g(t)*sum c_i B_i(x)
 # residual for basis i: g'(t)*B_i(x) - alpha*g(t)*B_dd_i(x)
-Bc = ns["basis"](a, b, nA, x_col, nu=0)
-Bddc = ns["basis"](a, b, nA, x_col, nu=2)
+Bc = basis(a, b, nA, x_col, nu=0)
+Bddc = basis(a, b, nA, x_col, nu=2)
 Gt = g(t_col); Gp = gp(t_col)
 # L[i,j,k] = Gp[k]*Bc[i,j] - alpha*Gt[k]*Bddc[i,j]
 L = (Gp[None, None, :] * Bc[:, :, None] - alpha * Gt[None, None, :] * Bddc[:, :, None])
@@ -84,8 +96,8 @@ Nr = 600
 S_pde = np.sqrt(W["w1"] / Nr) * L
 t_pde = -np.sqrt(W["w1"] / Nr) * src_full
 # BC
-Ba = ns["basis"](a, b, nA, np.array([a]), nu=0)[:, 0]
-Bb = ns["basis"](a, b, nA, np.array([b]), nu=0)[:, 0]
+Ba = basis(a, b, nA, np.array([a]), nu=0)[:, 0]
+Bb = basis(a, b, nA, np.array([b]), nu=0)[:, 0]
 Gtb = g(t_bc)
 Bbc = np.vstack([np.outer(Gtb, Ba), np.outer(Gtb, Bb)])  # (82, 15)
 Nbc = Bbc.shape[0]
@@ -93,7 +105,6 @@ S = np.vstack([S_pde, np.sqrt(W["w2"] / Nbc) * Bbc])
 tvec = np.concatenate([t_pde, np.zeros(Nbc)])
 c2, *_ = np.linalg.lstsq(S, tvec, rcond=None)
 # bounded-feasibility check: notebook constrains c to [-2, 2]
-from scipy.optimize import lsq_linear
 c2b = lsq_linear(S, tvec, bounds=(-2, 2)).x
 print(f"A2' unbounded max|c| = {np.abs(c2).max():.3f} (bound 2.0)", flush=True)
 c2 = c2b  # use the bounded solution for the reported RMSE

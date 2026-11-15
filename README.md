@@ -7,7 +7,7 @@ Hybrid Moth-Flame Optimization (MFO) + Butterfly Optimization Algorithm (BOA) wi
 
 - Searches PDE-solver configurations with a hybrid MFO–BOA metaheuristic.
 - Discretizes with B-spline / cubic-spline collocation (`scipy.interpolate.BSpline`, `CubicSpline`).
-- `notebook_code.py`: the solver (functions `run_seed`, `lstsq_fit`, `run_one`); `diag_eansatz2.py`: E-ansatz diagnostic — `(1-e^(-t))` envelope + exact boundary condition `u(x,0) = sin(x)`.
+- `src/mfo_boa_pde/`: the solver as an installable package (public API `main`, `run_one`, `run_seed`); `notebook_code.py`: a thin launcher that runs the package; `diag_eansatz2.py`: E-ansatz diagnostic — `(1-e^(-t))` envelope + exact boundary condition `u(x,0) = sin(x)`.
 
 ## Results
 
@@ -37,19 +37,19 @@ Run the tests from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The suite contains 14 tests and exercises the DEMO execution, numerical validation checks, result artifacts, and diagnostic behavior.
+The suite contains 27 tests and exercises the DEMO execution, numerical validation checks, result artifacts, diagnostic behavior, import safety, legacy entry-point compatibility, and DEMO numerical equivalence against the recorded baseline in `docs/migration/`.
 
 **Expected successful summary:**
 
 ```text
-Ran 14 tests in [elapsed time]
+Ran 27 tests in [elapsed time]
 
 OK
 ```
 
 The actual execution time depends on the machine and environment. The DEMO subprocess can take several minutes.
 
-The tests require the dependencies specified in `requirements.txt` and Python 3.12. The test suite runs the solver in temporary directories to avoid contamination from existing checkpoint files.
+The tests require the dependencies specified in `pyproject.toml` (or `requirements.txt`, kept synchronized) and Python 3.12. The test suite runs the solver in temporary directories to avoid contamination from existing checkpoint files.
 
 A passing test suite verifies the tested implementation and its regression checks. It does not establish reproduction of the thesis-reported Burgers' equation results.
 
@@ -58,12 +58,18 @@ A passing test suite verifies the tested implementation and its regression check
 ```bash
 git clone https://github.com/Reza-S80/MFO-BOA-PDE-Solver.git
 cd MFO-BOA-PDE-Solver
-pip install -r requirements.txt
+pip install -e .
+```
+
+For the optional parallel path (joblib), install the `parallel` extra instead:
+
+```bash
+pip install -e ".[parallel]"
 ```
 
 ## Usage
 
-Run the demo benchmark (NB_MODE=DEMO by default), or the full experiment with NB_MODE=FULL. The diagnostic replays segments of notebook_code.py — pass its path as an argument, or omit it to use the copy in the same directory:
+Run the demo benchmark (NB_MODE=DEMO by default), or the full experiment with NB_MODE=FULL. The diagnostic imports the package directly; it still accepts an optional script path argument for compatibility:
 
 ```bash
 python notebook_code.py
@@ -77,7 +83,7 @@ python diag_eansatz2.py notebook_code.py
 
 The solver uses a deterministic seed-generation policy.
 
-- The master seed is defined by `MASTER_SEED = 20261021` in `notebook_code.py`.
+- The master seed is defined by `MASTER_SEED = 20261021` in `src/mfo_boa_pde/config.py`.
 - The `run_seed(key, run, tag=0)` function derives a run-specific seed using NumPy's `SeedSequence`.
 - Seed derivation depends on the problem identifier, run index, and tag.
 - Each optimization run initializes its random-number generator with `np.random.default_rng(seed)`.
@@ -121,9 +127,12 @@ The thesis is the primary reference for the reported experimental results. The r
 
 ## API reference
 
-The main solver implementation is contained in `notebook_code.py`. It is currently a flat Python script rather than an installable Python package.
+The solver is the installable package `mfo_boa_pde` (`src/mfo_boa_pde/`).
+`notebook_code.py` is a thin launcher that runs `mfo_boa_pde.experiment.main()`.
+Importing the package is side-effect free; the public API is `main`,
+`run_one` and `run_seed` (re-exported from `mfo_boa_pde`).
 
-The following functions are available in its implementation.
+The following functions are available in the package.
 
 ### `run_seed(key, run, tag=0)`
 
@@ -175,7 +184,7 @@ Executes one optimization run for a selected PDE problem and algorithm.
 2. An interpolated optimization convergence curve.
 3. The optimized coefficient vector.
 
-**Implementation note:** These functions are defined in a script that executes experiment code during import. They should not currently be treated as a stable, independently importable public package API. Importing `notebook_code.py` executes the script.
+**Implementation note:** `run_seed`, `lstsq_fit` and `run_one` are importable from the package (`from mfo_boa_pde.solver import lstsq_fit`, `from mfo_boa_pde.experiment import run_seed, run_one`) without executing any experiment code. Importing the package runs nothing.
 
 ## Thesis
 
