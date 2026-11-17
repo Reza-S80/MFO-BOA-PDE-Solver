@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24222697.svg)](https://doi.org/10.5281/zenodo.24222697) [![CI](https://github.com/Reza-S80/MFO-BOA-PDE-Solver/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Reza-S80/MFO-BOA-PDE-Solver/actions/workflows/ci.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24222697.svg)](https://doi.org/10.5281/zenodo.24222697) [![CI](https://github.com/RezaSangari/MFO-BOA-PDE-Solver/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RezaSangari/MFO-BOA-PDE-Solver/actions/workflows/ci.yml)
 # MFO-BOA-PDE-Solver
 
 Hybrid Moth-Flame Optimization (MFO) + Butterfly Optimization Algorithm (BOA) with B-spline collocation for solving nonlinear partial differential equations. M.Sc. thesis code, Damghan University (2026).
@@ -67,7 +67,7 @@ A passing test suite verifies the tested implementation and its regression check
 ## Installation
 
 ```bash
-git clone https://github.com/Reza-S80/MFO-BOA-PDE-Solver.git
+git clone https://github.com/RezaSangari/MFO-BOA-PDE-Solver.git
 cd MFO-BOA-PDE-Solver
 pip install -e .
 ```
