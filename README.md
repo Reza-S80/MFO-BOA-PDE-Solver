@@ -80,7 +80,7 @@ pip install -e ".[parallel]"
 
 ## Usage
 
-Run the demo benchmark (`NB_MODE=DEMO` by default), or the full experiment with `NB_MODE=FULL`. The package can be executed directly using `python -m mfo_boa_pde`. The legacy `notebook_code.py` launcher remains supported for compatibility. The diagnostic imports the package directly; it still accepts an optional script path argument for compatibility:
+Run the demo benchmark (`NB_MODE=DEMO` by default), or the full experiment with `NB_MODE=FULL`. The package can be executed directly using `python -m mfo_boa_pde`. The legacy `notebook_code.py` launcher is still supported. The diagnostic imports the package directly and still accepts an optional script path argument:
 
 ```bash
 # Recommended package execution
@@ -111,7 +111,7 @@ The default DEMO configuration uses three runs and a smaller population and eval
 
 ### What this repository regenerates
 
-Running `notebook_code.py` executes the implemented solver and its validation workflow. Depending on the selected configuration, it generates computational outputs, including optimization results and diagnostic artifacts.
+Depending on the selected configuration, running `notebook_code.py` executes the solver and its validation workflow, generating optimization results and diagnostic artifacts.
 
 The repository also includes a separate E-ansatz diagnostic script, `diag_eansatz2.py`.
 
@@ -141,7 +141,7 @@ The associated M.Sc. thesis is:
 
 Damghan University, 2026.
 
-The thesis is the primary reference for the reported experimental results. The repository provides the available implementation, execution workflow, and validation tests.
+The thesis is the primary reference for the reported experimental results. The repository provides the implementation, execution workflow, and validation tests.
 
 ## API reference
 
@@ -149,8 +149,6 @@ The solver is the installable package `mfo_boa_pde` (`src/mfo_boa_pde/`).
 `notebook_code.py` is a thin launcher that runs `mfo_boa_pde.experiment.main()`.
 Importing the package is side-effect free; the public API is `main`,
 `run_one` and `run_seed` (re-exported from `mfo_boa_pde`).
-
-The following functions are available in the package.
 
 ### `run_seed(key, run, tag=0)`
 
@@ -162,8 +160,6 @@ Generates a deterministic integer seed for an optimization run.
 - `tag`: Optional seed namespace, defaulting to `0`.
 
 **Returns:** An integer seed generated using NumPy's `SeedSequence`.
-
-The seed depends on the master seed, the problem identifier, the run index, and the tag.
 
 ### `lstsq_fit(M, Uref, xv, tv)`
 
