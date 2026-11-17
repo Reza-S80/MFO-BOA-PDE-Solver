@@ -85,8 +85,8 @@ def load_reference(key):
     """(xv, tv, Uref, info) با کش دیسکی."""
     path = _ref_path(key)
     if os.path.exists(path):
-        d = np.load(path, allow_pickle=False)
-        return d["xv"], d["tv"], d["U"], dict(zip(d["info_k"].tolist(), d["info_v"].tolist()))
+        cached = np.load(path, allow_pickle=False)
+        return cached["xv"], cached["tv"], cached["U"], dict(zip(cached["info_k"].tolist(), cached["info_v"].tolist()))
     p = PROBLEMS[key]; xv, tv = val_grid(key)
     if key == "heat":
         U, info = heat_reference(p["par"], xv, tv), {"ref_error_est": 0.0}

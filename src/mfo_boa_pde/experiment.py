@@ -58,10 +58,10 @@ def run_one(key, alg, run, nx, nt, n_pop, max_evals, alg_kw, tag=0):
     assert fit.count == max_evals == n_ev                           # قرارداد بودجه
     err = M.grid(theta, xv, tv) - Uref
     xs = n_pop * (1 + np.arange(len(curve)))
-    cur = np.interp(np.linspace(0, max_evals, 200), xs, np.minimum.accumulate(curve), left=np.nan)
+    curve_interp = np.interp(np.linspace(0, max_evals, 200), xs, np.minimum.accumulate(curve), left=np.nan)
     return dict(problem=key, algorithm=alg, run=run, seed=seed, RMSE=float(np.sqrt(np.mean(err ** 2))),
                 MaxAE=float(np.abs(err).max()),
-                n_evals=n_ev, time_s=dt, n_coeffs=M.dim, best_F=float(np.min(curve))), cur, theta
+                n_evals=n_ev, time_s=dt, n_coeffs=M.dim, best_F=float(np.min(curve))), curve_interp, theta
 
 RESULTS = {}
 
@@ -71,11 +71,11 @@ def run_problem(key):
     if os.path.exists(ckpt):
         try:
             with open(ckpt, "rb") as _f:
-                _R = pickle.load(_f)
-            if len(_R["df"]) >= _need and set(_R["df"]["algorithm"]) >= set(ALG_NAMES):
-                print(f"↺ {key}: چک‌پوینت کامل ({len(_R['df'])} سطر) بازیابی شد — اجرا رد شد.")
-                RESULTS[key] = _R
-                return _R
+                ckpt_data = pickle.load(_f)
+            if len(ckpt_data["df"]) >= _need and set(ckpt_data["df"]["algorithm"]) >= set(ALG_NAMES):
+                print(f"↺ {key}: چک‌پوینت کامل ({len(ckpt_data['df'])} سطر) بازیابی شد — اجرا رد شد.")
+                RESULTS[key] = ckpt_data
+                return ckpt_data
             print(f"چک‌پوینت {key} ناقص است — اجرای دوباره.")
         except Exception as _e:
             print(f"چک‌پوینت {key} خوانده نشد ({_e}) — اجرای دوباره.")
@@ -84,9 +84,9 @@ def run_problem(key):
     jobs = [(alg, r) for r in range(N_RUNS) for alg in ALG_NAMES]
     out = _run_all(CFG["n_jobs"],
                    [(run_one, (key, alg, r, *PROBLEMS[key]["nxnt"], N_POP, MAX_EVALS, {})) for alg, r in jobs])
-    df = pd.DataFrame([o[0] for o in out])
-    curves = {(o[0]["algorithm"], o[0]["run"]): o[1] for o in out}
-    thetas = {(o[0]["algorithm"], o[0]["run"]): o[2] for o in out}
+    df = pd.DataFrame([run_out[0] for run_out in out])
+    curves = {(run_out[0]["algorithm"], run_out[0]["run"]): run_out[1] for run_out in out}
+    thetas = {(run_out[0]["algorithm"], run_out[0]["run"]): run_out[2] for run_out in out}
     RESULTS[key] = dict(df=df, curves=curves, thetas=thetas)
     with open(ckpt, "wb") as _f:
         pickle.dump(RESULTS[key], _f)
@@ -131,19 +131,19 @@ def _validation_checks():
     check("۲ مشتق دوم", d2_max < 1e-5, f"max|Δ|={d2_max:.2e}")
     VAL_ROWS += [("2 d/dx", d1_max, "<1e-6"), ("2 d2/dx2", d2_max, "<1e-5")]
 
-    rows = []
+    lstsq_rows = []
     for key in PROBLEMS:
         xv, tv, Uref, info = load_reference(key)
         M = make_machine(key)
         th, r, m, A = lstsq_fit(M, Uref, xv, tv)
         s = np.linalg.svd(A, compute_uv=False)
-        rows.append(dict(problem=key, n_coeffs=M.dim, rmse_approx=r, maxae_approx=m,
+        lstsq_rows.append(dict(problem=key, n_coeffs=M.dim, rmse_approx=r, maxae_approx=m,
                          rms_of_reference=float(np.sqrt(np.mean(Uref ** 2))), cond_design=s[0] / s[-1],
                          ref_error_est=info["ref_error_est"]))
-        check(f"۳ برازش lstsq ({key})", np.isfinite(r) and r < rows[-1]["rms_of_reference"], f"RMSE_approx={r:.3e}")
-    VAL_ROWS.append(("3 lstsq", max(x["rmse_approx"] for x in rows), "finite & < rms(ref)"))
+        check(f"۳ برازش lstsq ({key})", np.isfinite(r) and r < lstsq_rows[-1]["rms_of_reference"], f"RMSE_approx={r:.3e}")
+    VAL_ROWS.append(("3 lstsq", max(x["rmse_approx"] for x in lstsq_rows), "finite & < rms(ref)"))
     print("\nخطای تقریب فضای پایه (روی شبکه‌ی اعتبارسنجی) و عدد شرطی ماتریس طرح A:")
-    display(pd.DataFrame(rows).set_index("problem"))
+    display(pd.DataFrame(lstsq_rows).set_index("problem"))
 
     # جاروب ظرفیت: خطای تقریب برحسب تعداد کل ضرایب (برای تفسیر آستانه‌ی موفقیت)
     sweep = []
@@ -157,7 +157,7 @@ def _validation_checks():
     print("خطای تقریب lstsq برحسب تعداد کل ضرایب (کران پایین RMSE برای هر الگوریتم بهینه‌سازی روی همین فضا):")
     display(SWEEP)
 
-    rows = []
+    manufactured_rows = []
     for key, p in PROBLEMS.items():
         M = make_machine(key)
         th_star = rng_grid.uniform(-1, 1, M.dim)                    # دقیقاً در فضای پایه
@@ -170,13 +170,13 @@ def _validation_checks():
             ic=(M.Pic.T @ (th_star.reshape(M.nx, M.nt) @ M.Pt0[:, 0]))))
         F0 = float(Mt.objective(th_star[None])[0])
         Fp = float(Mt.objective((th_star + 0.01 * rng_grid.standard_normal(M.dim))[None])[0])
-        rows.append(dict(problem=key, F_at_theta_star=F0, F_perturbed=Fp))
+        manufactured_rows.append(dict(problem=key, F_at_theta_star=F0, F_perturbed=Fp))
         check(f"۴ جواب ساختگی ({key})", F0 < 1e-24 and Fp > 1e-8, f"F(θ*)={F0:.2e}, F(θ*+δ)={Fp:.2e}")
-    VAL_ROWS.append(("4 manufactured", max(r["F_at_theta_star"] for r in rows), "<1e-24"))
-    display(pd.DataFrame(rows).set_index("problem"))
+    VAL_ROWS.append(("4 manufactured", max(r["F_at_theta_star"] for r in manufactured_rows), "<1e-24"))
+    display(pd.DataFrame(manufactured_rows).set_index("problem"))
 
     lo_b, hi_b = COEF_BOUNDS
-    rows = []
+    scipy_rows = []
     for key in PROBLEMS:
         xv, tv, Uref, _ = load_reference(key)
         M = make_machine(key)
@@ -199,12 +199,12 @@ def _validation_checks():
         F_lsq = min(2 * r.cost for r in ls_runs)                  # least_squares: cost = ½ Σ r²
         err = lambda th: float(np.sqrt(np.mean((M.grid(th, xv, tv) - Uref) ** 2)))
         best_lb = min(lb_runs, key=lambda r: r.fun).x
-        rows.append(dict(problem=key, F_lstsq_baseline=F_ls, F_LBFGSB_best=F_lb, F_least_squares_best=F_lsq,
+        scipy_rows.append(dict(problem=key, F_lstsq_baseline=F_ls, F_LBFGSB_best=F_lb, F_least_squares_best=F_lsq,
                          F_LBFGSB_from_lstsq_start=lb_runs[0].fun,
                          RMSE_LBFGSB=err(best_lb), RMSE_lstsq=err(th_ls)))
         check(f"۵ L-BFGS-B ≤ مبنای lstsq ({key})", F_lb <= F_ls * (1 + 1e-9) + 1e-30,
               f"F_LBFGSB={F_lb:.3e} ≤ F_lstsq={F_ls:.3e}")
-    SCIPY_BASE = pd.DataFrame(rows).set_index("problem")
+    SCIPY_BASE = pd.DataFrame(scipy_rows).set_index("problem")
     VAL_ROWS.append(("5 scipy", float((SCIPY_BASE.F_LBFGSB_best / SCIPY_BASE.F_lstsq_baseline).max()), "<=1"))
     print("مبناهای scipy (برازندگی نهایی و RMSE روی شبکه‌ی اعتبارسنجی):")
     display(SCIPY_BASE)
@@ -314,8 +314,8 @@ def _ofat_section():
     fig, axes = plt.subplots(len(PROBLEMS), 4, figsize=(16, 3.4 * len(PROBLEMS)), squeeze=False)
     for i, key in enumerate(PROBLEMS):
         for j, factor in enumerate(["N", "HR", "n", "K"]):
-            d = OFAT[key][OFAT[key].factor == factor]
-            g = d.groupby("level").RMSE
+            factor_df = OFAT[key][OFAT[key].factor == factor]
+            g = factor_df.groupby("level").RMSE
             axes[i, j].errorbar(g.mean().index.astype(float), g.mean(), yerr=g.std().fillna(0), marker="o", capsize=3)
             axes[i, j].set_yscale("log"); axes[i, j].set_title(f"{PROBLEMS[key]['title']} — {factor}")
             axes[i, j].set_xlabel(factor); axes[i, j].set_ylabel("mean RMSE")

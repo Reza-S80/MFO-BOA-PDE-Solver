@@ -22,9 +22,9 @@ from .solver import lstsq_fit, make_machine
 
 def holm(pvals):
     p = np.asarray(pvals, float); m = len(p); order = np.argsort(p)
-    adj = np.empty(m); run = 0.0
+    adj = np.empty(m); running_max = 0.0
     for rank, i in enumerate(order):
-        run = max(run, (m - rank) * p[i]); adj[i] = min(1.0, run)
+        running_max = max(running_max, (m - rank) * p[i]); adj[i] = min(1.0, running_max)
     return adj
 
 def summary_table(df, tau):
@@ -39,15 +39,15 @@ def summary_table(df, tau):
         return ((ctr - mgn) / den, (ctr + mgn) / den)
     rows = []
     for alg in ALG_NAMES:
-        d = df[df.algorithm == alg]
-        n = len(d)
-        q1, q3 = np.percentile(d.RMSE, [25, 75])
-        k = int((d.RMSE < tau).sum())
+        alg_df = df[df.algorithm == alg]
+        n = len(alg_df)
+        q1, q3 = np.percentile(alg_df.RMSE, [25, 75])
+        k = int((alg_df.RMSE < tau).sum())
         lo, hi = wilson(k, n)
-        rows.append(dict(algorithm=alg, mean=d.RMSE.mean(), std=d.RMSE.std(ddof=1) if n > 1 else np.nan,
-                         median=d.RMSE.median(), IQR=q3 - q1, MaxAE_mean=d.MaxAE.mean(),
+        rows.append(dict(algorithm=alg, mean=alg_df.RMSE.mean(), std=alg_df.RMSE.std(ddof=1) if n > 1 else np.nan,
+                         median=alg_df.RMSE.median(), IQR=q3 - q1, MaxAE_mean=alg_df.MaxAE.mean(),
                          success_rate=(k / n if n else np.nan), sr_lo95=lo, sr_hi95=hi,
-                         time_mean_s=d.time_s.mean()))
+                         time_mean_s=alg_df.time_s.mean()))
     return pd.DataFrame(rows).set_index("algorithm")
 
 def friedman_table(df):
@@ -64,8 +64,8 @@ def wilcoxon_pairs(df):
     pairs = [("MFO-BOA", "MFO"), ("MFO-BOA", "BOA"), ("MFO", "BOA")]
     rows = []
     for a, b in pairs:
-        d = (P[a] - P[b]).values
-        nz = d[d != 0]
+        diffs = (P[a] - P[b]).values
+        nz = diffs[diffs != 0]
         try:
             w = stats.wilcoxon(P[a].values, P[b].values, alternative="two-sided")
             pv = float(w.pvalue)
@@ -79,8 +79,8 @@ def wilcoxon_pairs(df):
             rrb = float((wp - wm) / (wp + wm))
         else:
             rrb = 0.0
-        rows.append(dict(pair=f"{a} vs {b}", median_diff=float(np.median(d)), p_value=pv, effect_r_rb=rrb,
-                         wins_first=int((d < 0).sum()), n=len(d)))
+        rows.append(dict(pair=f"{a} vs {b}", median_diff=float(np.median(diffs)), p_value=pv, effect_r_rb=rrb,
+                         wins_first=int((diffs < 0).sum()), n=len(diffs)))
     out = pd.DataFrame(rows)
     out["p_Holm"] = holm(out.p_value)
     out["p_Bonferroni"] = np.minimum(1.0, out.p_value * len(out))
@@ -121,8 +121,8 @@ def plot_problem(key, R):
     im = ax[1, 0].imshow(np.abs(Un - Uref).T, origin="lower", aspect="auto", extent=[xv[0], xv[-1], tv[0], tv[-1]])
     ax[1, 0].set_title("|error| on validation grid (best MFO-BOA run)"); ax[1, 0].set_xlabel("x"); ax[1, 0].set_ylabel("t")
     fig.colorbar(im, ax=ax[1, 0])
-    data = [df[df.algorithm == a].RMSE.values for a in ALG_NAMES]
-    ax[1, 1].boxplot(data); ax[1, 1].set_xticklabels(ALG_NAMES); ax[1, 1].set_yscale("log")
+    rmse_by_alg = [df[df.algorithm == a].RMSE.values for a in ALG_NAMES]
+    ax[1, 1].boxplot(rmse_by_alg); ax[1, 1].set_xticklabels(ALG_NAMES); ax[1, 1].set_yscale("log")
     ax[1, 1].set_title("RMSE distribution over runs")
     fig.suptitle(f"{p['title']} — {MODE}", y=1.0)
     fig.tight_layout(); plt.show()
@@ -132,14 +132,14 @@ def shock_ratio_sensitivity(ratios=(1, 2, 3, 5)):
     xv_v, tv_v = val_grid("burgers")
     _, _, Uref_v, _ = load_reference("burgers")
     rows = []
-    for r in ratios:
-        M = make_machine("burgers", density_ratio=r)
+    for ratio in ratios:
+        M = make_machine("burgers", density_ratio=ratio)
         xc, tc = M.x_col, M.t_col
         Uref_c = burgers_cole_hopf(xc, tc, p["par"]["nu"])
         A_c = M.design(xc, tc)
         theta, *_ = np.linalg.lstsq(A_c, Uref_c.ravel(), rcond=None)
         err = (M.design(xv_v, tv_v) @ theta).ravel() - Uref_v.ravel()
-        rows.append(dict(density_ratio=r,
+        rows.append(dict(density_ratio=ratio,
                          rmse_validation=float(np.sqrt(np.mean(err ** 2))),
                          maxae_validation=float(np.abs(err).max())))
     return pd.DataFrame(rows).set_index("density_ratio")
@@ -181,8 +181,8 @@ def ofat_problem(key, run_one):
     out = _run_all(CFG["n_jobs"],
                    [(run_one, (key, "MFO-BOA", r, nx, nt, n_pop, mev, kw, 100))
                     for (_, _, r, nx, nt, n_pop, mev, kw) in jobs])
-    for (factor, level, *_), o in zip(jobs, out):
-        d = dict(o[0]); d.update(factor=factor, level=level); rows.append(d)
+    for (factor, level, *_), run_out in zip(jobs, out):
+        row = dict(run_out[0]); row.update(factor=factor, level=level); rows.append(row)
     df = pd.DataFrame(rows)
     approx = {}
     for n_, (nx, nt) in NXNT.items():
