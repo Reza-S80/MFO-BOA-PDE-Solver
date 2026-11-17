@@ -1,10 +1,9 @@
 """Statistics, reporting, plotting, shock sensitivity and OFAT.
 
-Moved verbatim from notebook_code.py (CELL 16 statistics, CELL 22 shock
-sensitivity, CELL 26 OFAT). Reporting functions take the result dict as an
-argument instead of reading experiment.RESULTS (avoids circular imports);
-ofat_problem takes run_one as an injected argument for the same reason.
-Configuration constants are read from .config.
+Reporting functions take the result dict as an argument instead of reading
+experiment.RESULTS (avoids circular imports); ofat_problem takes run_one as
+an injected argument for the same reason. Configuration constants are read
+from .config.
 """
 import math
 import os
@@ -176,7 +175,7 @@ def ofat_problem(key, run_one):
         nx, nt = NXNT[ov["n"]] if "n" in ov else p["nxnt"]
         kw = {k: v for k, v in ov.items() if k in ("HR", "K")}
         for r in range(CFG["ofat_runs"]):
-            mev = mev_const  # بودجه‌ی دقیقاً ثابت؛ چون L مضرب N_POP و همه‌ی سطوح N است، مضرب هر n_pop نیز هست
+            mev = mev_const
             assert mev % n_pop == 0
             jobs.append((factor, level, r, nx, nt, n_pop, mev, kw))
     out = _run_all(CFG["n_jobs"],
@@ -185,7 +184,6 @@ def ofat_problem(key, run_one):
     for (factor, level, *_), o in zip(jobs, out):
         d = dict(o[0]); d.update(factor=factor, level=level); rows.append(d)
     df = pd.DataFrame(rows)
-    # خطای تقریب lstsq برای هر n
     approx = {}
     for n_, (nx, nt) in NXNT.items():
         if n_ in CFG["ofat_levels"]["n"]:

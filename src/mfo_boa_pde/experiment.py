@@ -1,9 +1,8 @@
 """Experiment orchestration: seeds, single runs, checkpoints, main().
 
-run_seed / run_one / run_problem are moved verbatim from notebook_code.py
-(CELL 16). All former top-level execution code (validation checks, problem
-sections, OFAT, final aggregation) lives in main() so that importing this
-module executes nothing.
+All former top-level execution code (validation checks, problem sections,
+OFAT, final aggregation) lives in main() so that importing this module
+executes nothing.
 """
 import os
 import pickle
@@ -96,11 +95,10 @@ def run_problem(key):
 
 
 def _validation_checks():
-    """Validation checks 1-6 (former CELL 10-14 top-level code)."""
+    """Validation checks 1-6."""
     VAL_ROWS = []
-    rng_grid = np.random.default_rng(777)      # rng جداگانه و ثابت (فقط جواب ساختگی)
+    rng_grid = np.random.default_rng(777)
 
-    # ── آزمون ۱: partition of unity و بازتولید چندجمله‌ای ──
     pou_max, poly_max = 0.0, 0.0
     for key, p in PROBLEMS.items():
         for (lo, hi, n) in [(p["a"], p["b"], p["nxnt"][0]), (0.0, p["T"], p["nxnt"][1]), (p["a"], p["b"], 7)]:
@@ -117,7 +115,6 @@ def _validation_checks():
     check("۱ بازتولید چندجمله‌ای تا درجه‌ی ۳", poly_max < 1e-12, f"max خطای نسبی={poly_max:.2e}")
     VAL_ROWS += [("1 PoU", pou_max, "<1e-12"), ("1 poly", poly_max, "<1e-12")]
 
-    # ── آزمون ۲: مشتق تحلیلی در برابر تفاضل مرکزی (فقط تست) ──
     d1_max, d2_max = 0.0, 0.0
     for key, p in PROBLEMS.items():
         for (lo, hi, n) in [(p["a"], p["b"], 6), (0.0, p["T"], 6)]:
@@ -160,7 +157,6 @@ def _validation_checks():
     print("خطای تقریب lstsq برحسب تعداد کل ضرایب (کران پایین RMSE برای هر الگوریتم بهینه‌سازی روی همین فضا):")
     display(SWEEP)
 
-    # ── آزمون ۴: جواب ساختگی (manufactured solution) ──
     rows = []
     for key, p in PROBLEMS.items():
         M = make_machine(key)
@@ -179,7 +175,6 @@ def _validation_checks():
     VAL_ROWS.append(("4 manufactured", max(r["F_at_theta_star"] for r in rows), "<1e-24"))
     display(pd.DataFrame(rows).set_index("problem"))
 
-    # ── آزمون ۵: مبناهای scipy روی همان تابع برازندگی و همان کران‌ها ──
     lo_b, hi_b = COEF_BOUNDS
     rows = []
     for key in PROBLEMS:
@@ -214,7 +209,6 @@ def _validation_checks():
     print("مبناهای scipy (برازندگی نهایی و RMSE روی شبکه‌ی اعتبارسنجی):")
     display(SCIPY_BASE)
 
-    # ── آزمون ۶: Sphere و Rastrigin با بعد، کران و بودجه‌ی مشخص و برابر ──
     # نکته‌ی طراحی: برخلاف آزمون‌های ۱–۵، این آزمون از check()ِ خطادهنده استفاده نمی‌کند؛
     # نسبت‌ها صادقانه گزارش و PASS/FAIL فقط ثبت می‌شود. رد شدن در آستانه‌ی عملکردی باگ نیست:
     # «درستی پیاده‌سازی» (شمارنده‌ی دقیق max_evals) با «کیفیت همگرایی» (نسبت) فرق دارد.
@@ -259,7 +253,7 @@ def _validation_checks():
 
 
 def _problem_sections():
-    """Heat / Burgers / shock-sensitivity / diffusion sections (CELL 18-24)."""
+    """Heat / Burgers / shock-sensitivity / diffusion sections."""
     xv, tv, Uref, info = load_reference("heat")
     M = make_machine("heat")
     print(f"heat: n_coeffs={M.dim} (nx={M.nx}, nt={M.nt}) | grid validation={Uref.shape} | collocation={len(M.x_col)}x{len(M.t_col)}")
@@ -306,7 +300,7 @@ def _problem_sections():
 
 
 def _ofat_section():
-    """OFAT study and figure (former CELL 26 top-level code)."""
+    """OFAT study and figure."""
     OFAT = {}
     for key in PROBLEMS:
         OFAT[key] = ofat_problem(key, run_one)
@@ -330,7 +324,7 @@ def _ofat_section():
 
 
 def _finalize(ofat):
-    """Final aggregation, CSV output, version and seed listing (CELL 28-29)."""
+    """Final aggregation, CSV output, version and seed listing."""
     ALL = pd.concat([RESULTS[k]["df"] for k in PROBLEMS], ignore_index=True)
     ALL = ALL[["problem", "algorithm", "run", "seed", "RMSE", "MaxAE", "n_evals", "time_s", "n_coeffs", "best_F"]]
     ALL = ALL.sort_values(["problem", "algorithm", "run"]).reset_index(drop=True)

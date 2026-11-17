@@ -1,9 +1,8 @@
 """B-spline basis, reference solutions and validation grids.
 
-Moved verbatim from notebook_code.py (CELL 4 basis helpers, CELL 8 reference
-machinery, CELL 10 greville). The reference cache directory is CWD-relative
-("cache", as in the original) and is created lazily inside load_reference
-instead of at import time, so importing this module has no side effects.
+The reference cache directory is CWD-relative ("cache", as in the original)
+and is created lazily inside load_reference instead of at import time, so
+importing this module has no side effects.
 """
 import hashlib
 import json

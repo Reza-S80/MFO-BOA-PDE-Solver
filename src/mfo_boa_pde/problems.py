@@ -1,4 +1,4 @@
-"""Problem definitions (moved verbatim from notebook_code.py).
+"""Problem definitions.
 
 A dedicated module because PROBLEMS / PROB_IDS / ALG_NAMES are needed by
 basis.py, solver.py, experiment.py and diagnostics.py; owning them here

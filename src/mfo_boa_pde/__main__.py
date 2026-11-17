@@ -2,7 +2,7 @@
 
 The supported entry point remains the notebook_code.py compatibility launcher
 at the repository root; this module exists so the installed package is also
-runnable directly (post-merge panel review, Felo, 2026-11-15).
+runnable directly.
 """
 from .experiment import main
 

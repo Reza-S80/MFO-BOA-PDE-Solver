@@ -1,4 +1,4 @@
-"""Run configuration for mfo_boa_pde (moved verbatim from notebook_code.py).
+"""Run configuration for mfo_boa_pde.
 
 Owns the MODE/CONFIGS constants, seeds, weights, basis sizes and the
 configuration hash. Importing this module has no side effects (no prints,
@@ -66,7 +66,7 @@ CFG_HASH = _config_hash()
 # ابعاد پایه برای «تعداد کل ضرایب» n (ASSUMPTION: n = nx*nt)
 NXNT = {16: (4, 4), 20: (4, 5), 25: (5, 5), 30: (5, 6), 36: (6, 6), 64: (8, 8), 100: (10, 10), 144: (12, 12)}
 COEF_BOUNDS = (-2.0, 2.0)
-NCX, NCT = 30, 20                        # ۶۰۰ نقطه‌ی کالوکیشن
+NCX, NCT = 30, 20
 N_IC, N_BC = 41, 41
 
 CACHE_DIR = "cache"  # CWD-relative (as in the original); created lazily by load_reference.

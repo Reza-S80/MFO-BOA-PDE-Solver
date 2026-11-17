@@ -48,7 +48,7 @@ nA = 15
 
 # envelope g(t) = 1 - e^{-t}
 def g(t): return 1.0 - np.exp(-t)
-def gp(t): return np.exp(-t)  # g'(t)
+def gp(t): return np.exp(-t)
 
 # basis: phi_i(x,t) = g(t) * B_i(x)
 # u_t = g'(t)*B_i ; u_xx = g(t)*B_i''
@@ -108,7 +108,6 @@ c2, *_ = np.linalg.lstsq(S, tvec, rcond=None)
 c2b = lsq_linear(S, tvec, bounds=(-2, 2)).x
 print(f"A2' unbounded max|c| = {np.abs(c2).max():.3f} (bound 2.0)", flush=True)
 c2 = c2b  # use the bounded solution for the reported RMSE
-# RMSE on validation grid
 U = np.sin(xv)[:, None] + g(tv)[None, :] * (Bx_v.T @ c2)[:, None]
 A2_rmse = float(np.sqrt(np.mean((U - Uref) ** 2)))
 print(f"A2' PDE-constrained attainable RMSE = {A2_rmse:.3e}", flush=True)

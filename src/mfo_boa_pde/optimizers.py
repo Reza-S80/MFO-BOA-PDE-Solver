@@ -1,6 +1,5 @@
 """MFO / BOA / hybrid optimizers and the parallel-execution helper.
 
-Moved verbatim from notebook_code.py (CELL 2 _run_all, CELL 6 optimizers).
 joblib stays optional: the try/except fallback is preserved, but the
 "joblib not found" message is NOT printed at import (import must be silent);
 main() prints it when the fallback is in effect.
@@ -125,8 +124,8 @@ def optimize_hybrid(fitness, bounds, n_pop, max_evals, rng, dim=None, HR=ALG_PAR
     b_arch_f = float(fB.min()); b_arch_x = B[np.argmin(fB)].copy()
     curve = [arch_f]
     for k in range(1, T + 1):
-        M = mfo_move(M, fM, k, T, b, lb, ub, rng)                 # ابتدا زیرجمعیت MFO
-        B = boa_move(B, fB, b_arch_x, c, a, p, lb, ub, rng)       # سپس زیرجمعیت BOA (g* از آرشیو خودش)
+        M = mfo_move(M, fM, k, T, b, lb, ub, rng)
+        B = boa_move(B, fB, b_arch_x, c, a, p, lb, ub, rng)
         f_all = fitness(np.vstack([M, B]))
         fM, fB = f_all[:n_m].copy(), f_all[n_m:].copy()
         if f_all.min() < arch_f:
@@ -138,7 +137,7 @@ def optimize_hybrid(fitness, bounds, n_pop, max_evals, rng, dim=None, HR=ALG_PAR
             fbestM, fbestB = fM[iM], fB[iB]
             M[wM], fM[wM] = bestB, fbestB
             B[wB], fB[wB] = bestM, fbestM
-        if fB.min() < b_arch_f:                                   # به‌روزرسانی آرشیو BOA پس از تبادل احتمالی
+        if fB.min() < b_arch_f:
             b_arch_f = float(fB.min()); b_arch_x = B[np.argmin(fB)].copy()
         curve.append(arch_f)                                      # بهترینِ آرشیوشده تا این نسل (مطابق «بهترین برازندگی» پایان‌نامه)
     n_ev = fitness.count - c0

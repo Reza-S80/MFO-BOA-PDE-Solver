@@ -1,9 +1,4 @@
-"""B-spline collocation machine, fitness, and PDE problem helpers.
-
-Moved verbatim from notebook_code.py (CELL 4 machine, CELL 8 shock region /
-collocation points / machine factory, CELL 10 check, CELL 11 lstsq_fit).
-PROBLEMS is imported from .problems; W_FIT and the grid constants from .config.
-"""
+"""B-spline collocation machine, fitness, and PDE problem helpers."""
 import numpy as np
 
 from .basis import basis, burgers_cole_hopf
@@ -46,7 +41,6 @@ class Machine:
     def with_targets(self, targets):
         return Machine(self.prob, self.nx, self.nt, self.x_col, self.t_col, self.x_ic, self.t_bc, targets)
 
-    # --- ارزیابی میدان روی نقاط کالوکیشن (دسته‌ای) ---
     def fields(self, X):
         C = X.reshape(-1, self.nx, self.nt)
         M = C @ self.Pt                    # (m, nx, nct)
@@ -94,7 +88,6 @@ class Machine:
                                np.sqrt(w["w2"] / (2 * uR.size)) * uR,
                                np.sqrt(w["w3"] / u_ic.size) * u_ic])
 
-    # --- میدان روی شبکه‌ی دلخواه (اعتبارسنجی) ---
     def grid(self, theta, xv, tv, dx=0):
         C = np.asarray(theta, float).reshape(self.nx, self.nt)
         a, b, T = self.prob["a"], self.prob["b"], self.prob["T"]
